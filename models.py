@@ -1,3 +1,8 @@
+from application import db
+from database import conn
+
+
+
 class User:
     def __init__(self, username, email, password):
         self.username = username
@@ -15,9 +20,19 @@ class Book:
         self.review_count = review_count
         self.avarage_score = avarage_score
 
+    @classmethod
+    def search_by_isbn(self, isbn):
+        query = f"SELECT * FROM book WHERE isbn ILIKE '%{isbn}%'"
+        cursor = conn.cursor()
+        cursor.execute(query)
+        book = cursor.fetchall()
+        print(book)
+        cursor.close()
+
 
 class Review:
-    def __init__(self, book_id, user_id, timestamp):
+    def __init__(self, book_id, user_id, published, content):
         self.book_id = book_id
         self.user_id = user_id
-        self.timestamp = timestamp
+        self.published = published
+        self.content = content

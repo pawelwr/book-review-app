@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+
+{% block heading %}
+    Result for: {{ text }}
+{% endblock %}
+
+
+{% block body %}
+{% if result %}
+    {% for book in result %}
+    <div>
+        <hr>
+        <p><b>Title:</b> {{ book[0] }}</p>
+        <p><b>Author:</b> {{ book[1] }}</p>
+        <p><b>Year:</b> {{ book[2] }}</p>
+    </div>
+    {% endfor %}
+{% endif %}
+
+{% endblock %}

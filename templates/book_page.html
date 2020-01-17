@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block heading %}
+    {{ title }}
+{% endblock %}
+
+{% block body %}
+<div>
+    <p><b>Title:</b> {{ book[0] }}</p>
+    <p><b>Author:</b> {{ book[1] }}</p>
+    <p><b>Year:</b> {{ book[2] }}</p>
+    <p><b>Good Reads Avarage ranking:</b> {{ avg_rank }}</p>
+    <p><b>Good Reads number of ratings:</b> {{ num_ratings }}</p>
+</div>
+<div>
+    <form action="/comment/{{ book[3] }}" method="post">
+        <input type="text" name="add_comment" size="300" placeholder="Add comment...">
+        <input type="submit" value="submit">
+    </form>
+</div>
+{% endblock %}

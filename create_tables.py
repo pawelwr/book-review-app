@@ -15,7 +15,7 @@ CREATE TABLE book (
     title VARCHAR,
     author VARCHAR,
     year INTEGER NOT NULL,
-    isbn INTEGER UNIQUE NOT NULL
+    isbn VARCHAR UNIQUE NOT NULL
     );
     
 CREATE TABLE review (

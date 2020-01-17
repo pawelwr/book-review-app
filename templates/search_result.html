@@ -10,9 +10,11 @@
     {% for book in result %}
     <div>
         <hr>
+        <a href="/book/{{ book[3]}}">
         <p><b>Title:</b> {{ book[0] }}</p>
         <p><b>Author:</b> {{ book[1] }}</p>
         <p><b>Year:</b> {{ book[2] }}</p>
+        </a>
     </div>
     {% endfor %}
 {% endif %}

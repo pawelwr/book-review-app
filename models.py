@@ -1,15 +1,36 @@
 # from application import db
 from database import conn
+# from application import login
 
-
-
-class User:
-    def __init__(self, username, email, password):
+ 
+class User():
+    def __init__(self, username, password, email=""):
         self.username = username
-        self.email = email
         self.password = password
+        self.email = email
+        self.authenticated = False
         self.reviews_id = []
 
+    def __repr__(self):
+        return f"<username: {self.username}, password: {self.password}, email: {self.email}>"
+        
+        return User(username, password, email)
+
+    def is_active(self):
+        """True, as all users are active."""
+        return True
+
+    def get_id(self):
+        """Return the email address to satisfy Flask-Login's requirements."""
+        return self.email
+
+    def is_authenticated(self):
+        """Return True if the user is authenticated."""
+        return self.authenticated
+
+    def is_anonymous(self):
+        """False, as anonymous users aren't supported."""
+        return False
 
 class Book:
     def __init__(self, title, author, year, isbn, review_count=0, avarage_score=0.0):
@@ -23,11 +44,9 @@ class Book:
     @classmethod
     def search_by_isbn(self, isbn):
         query = f"SELECT * FROM book WHERE isbn ILIKE '%{isbn}%'"
-        print(query)
         cursor = conn.cursor()
         cursor.execute(query)
         book = cursor.fetchall()
-        print(book)
         cursor.close()
 
     @classmethod
@@ -64,3 +83,7 @@ class Review:
         self.user_id = user_id
         self.published = published
         self.content = content
+
+    @classmethod
+    def add_coment(self, book_id, user_id, published, content):
+        query=f"INSERT INTO review (book_id, user_id, published, content) VALUES ({book_id}, {user_id}, {published}, {content})"

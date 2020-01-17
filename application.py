@@ -16,7 +16,6 @@ from forms import LoginForm, RegisterForm
 app = Flask(__name__)
 DATABASE_URL = "postgres://dyqjdqmwzfzjvw:1183c33c8bb8e2eb63c31da1f6496db492462e67c02d67ceec95a0e3caf25821@ec2-54-75-238-138.eu-west-1.compute.amazonaws.com:5432/dehg1it917u19a"
 
-
 # Check for environment variable
 if not os.getenv("DATABASE_URL"):
     raise RuntimeError("DATABASE_URL is not set")
@@ -33,8 +32,6 @@ db = scoped_session(sessionmaker(bind=engine))
 
 login_manager = LoginManager()
 login_manager.init_app(app)
-
-
 
 @app.route("/")
 def index():
@@ -68,7 +65,8 @@ def load_user(username):
 def book_page(id):
     book = Book.search_by_id(id)
     try:
-        gr_data = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": f"{gr_key}", "isbns": f"{id}"})
+        print(book)
+        gr_data = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": f"{gr_key}", "isbns": f"{book[4]}"})
         gr_json = gr_data.json()
         avg_rank = gr_json['books'][0]['average_rating']
         num_ratings = gr_json['books'][0]['work_ratings_count']

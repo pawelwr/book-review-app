@@ -61,20 +61,22 @@ class Book:
 
     @classmethod
     def search(self, text):
+        if "'" in text:
+            t = text.split("'")
+            text = "''".join(t)
         query = f"SELECT title, author, year, id, isbn FROM book WHERE title ILIKE '%{text}%' OR author ILIKE '%{text}%'"
 
         cursor = conn.cursor()
         cursor.execute(query)
         result = cursor.fetchall()
         print(query)
-        print(result)
         cursor.close()        
 
         return result
 
     @classmethod
     def search_by_id(self, id):
-        query = f"SELECT title, author, year, id FROM book WHERE id = '{id}'"
+        query = f"SELECT title, author, year, id, isbn FROM book WHERE id = '{id}'"
         cursor = conn.cursor()
         cursor.execute(query)
         book = cursor.fetchone()

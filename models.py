@@ -4,7 +4,8 @@ from application import *
 
 
 class User():
-    def __init__(self, username, password, email=""):
+    def __init__(self, id, username, password, email=""):
+        self.id = id
         self.username = username
         self.password = password
         self.email = email
@@ -53,7 +54,7 @@ class Book:
         # if "'" in text:
         #     t = text.split("'")
         #     text = "''".join(t)
-        query = f"SELECT title, author, year, id FROM book WHERE title ILIKE '%{text}%' OR author ILIKE '%{text}%'"
+        query = f"SELECT title, author, year, id, isbn FROM book WHERE title ILIKE '%{text}%' OR author ILIKE '%{text}%'"
 
         cursor = conn.cursor()
         cursor.execute(query)
@@ -66,13 +67,22 @@ class Book:
 
     @classmethod
     def search_by_id(self, id):
-        query = f"SELECT title, author, year FROM book WHERE id = '{id}'"
+        query = f"SELECT title, author, year, id FROM book WHERE id = '{id}'"
         cursor = conn.cursor()
         cursor.execute(query)
         book = cursor.fetchone()
         cursor.close()
 
         return book
+    
+    @classmethod
+    def get_comments(self, id):
+        query = f"SELECT content, published from review WHERE book_id = {id}"
+        cursor = conn.cursor()
+        cursor.execute(query)
+        comments = cursor.fetchall()
+        cursor.close()        
+        return comments
 
 
 class Review:
@@ -84,7 +94,8 @@ class Review:
 
     @classmethod
     def add_coment(self, book_id, user_id, published, content):
-        query=f"INSERT INTO review (book_id, user_id, published, content) VALUES ({book_id}, {user_id}, {published}, {content})"
+        query=f"INSERT INTO review (book_id, user_id, published, content) VALUES ({book_id}, {user_id}, '{published}', '{content}')"
         cursor = conn.cursor()
         cursor.execute(query)
-        cursor.commit()
+        conn.commit()
+        cursor.close()

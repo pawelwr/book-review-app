@@ -7,9 +7,10 @@ from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
+from datetime import datetime
 
 from database import conn, gr_key
-from models import Book, User
+from models import Book, User, Review
 from forms import LoginForm
 
 app = Flask(__name__)
@@ -49,7 +50,7 @@ def search():
 
 @login_manager.user_loader
 def load_user(username):
-    query = f"SELECT username, password, email FROM users WHERE username = '{username}' OR email = '{username}'"
+    query = f"SELECT username, password, email, id FROM users WHERE username = '{username}' OR email = '{username}'"
     print(query)
     cursor = conn.cursor()
     cursor.execute(query)
@@ -59,7 +60,8 @@ def load_user(username):
         username = user[0]
         password = user[1]
         email = user [2]
-        return User(username, password, email)
+        id = user[3]
+        return User(id, username, password, email)
     return None
 
 @app.route("/book/<int:id>")
@@ -73,7 +75,9 @@ def book_page(id):
     except:
         avg_rank = 'no data'
         num_ratings = 'no data'
-    return render_template("book_page.html", avg_rank=avg_rank, num_ratings=num_ratings, book=book)
+    
+    comments = Book.get_comments(id)
+    return render_template("book_page.html", avg_rank=avg_rank, num_ratings=num_ratings, book=book, comments=comments)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -101,3 +105,13 @@ def login():
 def logout():
     logout_user()
     return redirect("/")
+
+@login_required
+@app.route("/comment/<int:book_id>", methods=['POST'])
+def add_comment(book_id):
+    text = request.form.get("add_comment")
+    print(text)
+    published = datetime.now()
+    user_id = current_user.id
+    Review.add_coment(book_id, user_id, published, text)
+    return redirect(f"/book/{book_id}")

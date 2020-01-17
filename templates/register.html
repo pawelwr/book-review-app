@@ -1,12 +1,12 @@
 {% extends "layout.html" %}
 
 {% block heading %}
-    LOGIN
+    REGISTER
 {% endblock %}
 
 {% block body %}
     <h1>Sign In</h1>
-    <form action="/login" method="post" novalidate>
+    <form action="/register" method="post" novalidate>
         {{ form.hidden_tag() }}
         <p>
             {{ form.username.label }}<br>
@@ -16,8 +16,10 @@
             {{ form.password.label }}<br>
             {{ form.password(size=32) }}
         </p>
-        <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
+        <p>
+            {{ form.email.label }} 
+            {{ form.email(size=32) }}
+        </p>
         <p>{{ form.submit() }}</p>
     </form>
-    <a href="/register">Click here to sign up!</a>
 {% endblock %}

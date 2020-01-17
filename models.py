@@ -12,6 +12,16 @@ class User():
         self.authenticated = False
         self.reviews_id = []
 
+    @classmethod
+    def add_user(self, username, password, email):
+        query = f"INSERT INTO users (username, password, email) VALUES ('{username}', '{password}', '{email}')"
+        print(query)
+        cursor = conn.cursor()
+        cursor.execute(query)
+        conn.commit()
+        cursor.close()
+        return True
+
     def __repr__(self):
         return f"<username: {self.username}, password: {self.password}, email: {self.email}>"
 

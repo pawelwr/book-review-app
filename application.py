@@ -11,7 +11,7 @@ from datetime import datetime
 
 from database import conn, gr_key
 from models import Book, User, Review
-from forms import LoginForm
+from forms import LoginForm, RegisterForm
 
 app = Flask(__name__)
 DATABASE_URL = "postgres://dyqjdqmwzfzjvw:1183c33c8bb8e2eb63c31da1f6496db492462e67c02d67ceec95a0e3caf25821@ec2-54-75-238-138.eu-west-1.compute.amazonaws.com:5432/dehg1it917u19a"
@@ -51,7 +51,7 @@ def search():
 @login_manager.user_loader
 def load_user(username):
     query = f"SELECT username, password, email, id FROM users WHERE username = '{username}' OR email = '{username}'"
-    print(query)
+    print("load_user query", query)
     cursor = conn.cursor()
     cursor.execute(query)
     user = cursor.fetchone()
@@ -106,6 +106,17 @@ def logout():
     logout_user()
     return redirect("/")
 
+@app.route("/register", methods=['GET', 'POST'])
+def register():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+        email = form.email.data
+        User.add_user(username, password, email)
+        return redirect("/login")
+    return render_template("register.html", form=form)
+
 @login_required
 @app.route("/comment/<int:book_id>", methods=['POST'])
 def add_comment(book_id):
@@ -115,3 +126,4 @@ def add_comment(book_id):
     user_id = current_user.id
     Review.add_coment(book_id, user_id, published, text)
     return redirect(f"/book/{book_id}")
+

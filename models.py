@@ -1,8 +1,8 @@
 # from application import db
 from database import conn
-# from application import login
+from application import *
 
- 
+
 class User():
     def __init__(self, username, password, email=""):
         self.username = username
@@ -13,8 +13,6 @@ class User():
 
     def __repr__(self):
         return f"<username: {self.username}, password: {self.password}, email: {self.email}>"
-        
-        return User(username, password, email)
 
     def is_active(self):
         """True, as all users are active."""
@@ -32,6 +30,7 @@ class User():
         """False, as anonymous users aren't supported."""
         return False
 
+
 class Book:
     def __init__(self, title, author, year, isbn, review_count=0, avarage_score=0.0):
         self.title = title
@@ -41,13 +40,13 @@ class Book:
         self.review_count = review_count
         self.avarage_score = avarage_score
 
-    @classmethod
-    def search_by_isbn(self, isbn):
-        query = f"SELECT * FROM book WHERE isbn ILIKE '%{isbn}%'"
-        cursor = conn.cursor()
-        cursor.execute(query)
-        book = cursor.fetchall()
-        cursor.close()
+    # @classmethod
+    # def search_by_isbn(self, isbn):
+    #     query = f"SELECT * FROM book WHERE isbn ILIKE '%{isbn}%'"
+    #     cursor = conn.cursor()
+    #     cursor.execute(query)
+    #     book = cursor.fetchall()
+    #     cursor.close()
 
     @classmethod
     def search(self, text):
@@ -76,7 +75,6 @@ class Book:
         return book
 
 
-
 class Review:
     def __init__(self, book_id, user_id, published, content):
         self.book_id = book_id
@@ -87,3 +85,6 @@ class Review:
     @classmethod
     def add_coment(self, book_id, user_id, published, content):
         query=f"INSERT INTO review (book_id, user_id, published, content) VALUES ({book_id}, {user_id}, {published}, {content})"
+        cursor = conn.cursor()
+        cursor.execute(query)
+        cursor.commit()

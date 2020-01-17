@@ -6,9 +6,11 @@ from flask import Flask, session, render_template, request, redirect, flash, url
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
+from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 
 from database import conn, gr_key
 from models import Book, User
+from forms import LoginForm
 
 app = Flask(__name__)
 DATABASE_URL = "postgres://dyqjdqmwzfzjvw:1183c33c8bb8e2eb63c31da1f6496db492462e67c02d67ceec95a0e3caf25821@ec2-54-75-238-138.eu-west-1.compute.amazonaws.com:5432/dehg1it917u19a"
@@ -21,12 +23,16 @@ if not os.getenv("DATABASE_URL"):
 # Configure session to use filesystem
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
-app.config["SECRET_KEY"] = "ppp"
+app.secret_key = "ppp"
 Session(app)
 
 # Set up database
 engine = create_engine(os.getenv("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+
 
 
 @app.route("/")
@@ -41,6 +47,21 @@ def search():
     print(result)
     return render_template("search_result.html", text=text, result=result)
 
+@login_manager.user_loader
+def load_user(username):
+    query = f"SELECT username, password, email FROM users WHERE username = '{username}' OR email = '{username}'"
+    print(query)
+    cursor = conn.cursor()
+    cursor.execute(query)
+    user = cursor.fetchone()
+    cursor.close()
+    if user:
+        username = user[0]
+        password = user[1]
+        email = user [2]
+        return User(username, password, email)
+    return None
+
 @app.route("/book/<int:id>")
 def book_page(id):
     book = Book.search_by_id(id)
@@ -54,16 +75,29 @@ def book_page(id):
         num_ratings = 'no data'
     return render_template("book_page.html", avg_rank=avg_rank, num_ratings=num_ratings, book=book)
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
         username = form.username.data
-        user = User.user(username)
+        user = load_user(username)
+        password = form.password.data
+
         print(user)
-        if user is None:
+
+        if user and password == user.password:
+            login_user(user)
+
+        if user is None or not current_user.is_authenticated:
             flash('Invalid username or password')
-            return redirect('/login')
-        login_user(user)
-        return redirect("/")
-    return render_template('login', form=form)
+            print("nouser")
+            return redirect("/login")
+
+        return render_template("layout.html")
+    return render_template("login.html", form=form)
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect("/")

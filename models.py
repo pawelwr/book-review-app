@@ -1,6 +1,4 @@
-# from application import db
 from database import conn
-from application import *
 
 
 class User():
@@ -60,7 +58,7 @@ class Book:
     #     cursor.close()
 
     @classmethod
-    def search(self, text):
+    def search(cls, text):
         if "'" in text:
             t = text.split("'")
             text = "''".join(t)
@@ -75,7 +73,7 @@ class Book:
         return result
 
     @classmethod
-    def search_by_id(self, id):
+    def search_by_id(cls, id):
         query = f"SELECT title, author, year, id, isbn FROM book WHERE id = '{id}'"
         cursor = conn.cursor()
         cursor.execute(query)
@@ -85,7 +83,7 @@ class Book:
         return book
     
     @classmethod
-    def get_comments(self, id):
+    def get_comments(cls, id):
         query = f"SELECT content, published from review WHERE book_id = {id}"
         cursor = conn.cursor()
         cursor.execute(query)
@@ -102,7 +100,7 @@ class Review:
         self.content = content
 
     @classmethod
-    def add_coment(self, book_id, user_id, published, content):
+    def add_coment(cls, book_id, user_id, published, content):
         query=f"INSERT INTO review (book_id, user_id, published, content) VALUES ({book_id}, {user_id}, '{published}', '{content}')"
         cursor = conn.cursor()
         cursor.execute(query)

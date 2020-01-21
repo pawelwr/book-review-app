@@ -85,8 +85,6 @@ def login():
         user = load_user(username)
         password = form.password.data
 
-        print(user)
-
         if user and password == user.password:
             login_user(user)
 
@@ -125,3 +123,4 @@ def add_comment(book_id):
     Review.add_coment(book_id, user_id, published, text)
     return redirect(f"/book/{book_id}")
 
+@app.route("/api/")

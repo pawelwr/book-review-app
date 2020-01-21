@@ -1,6 +1,7 @@
 import os
 import psycopg2
 import requests
+import json
 
 from flask import Flask, session, render_template, request, redirect, flash, url_for
 from flask_session import Session
@@ -65,7 +66,6 @@ def load_user(username):
 def book_page(id):
     book = Book.search_by_id(id)
     try:
-        print(book)
         gr_data = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": f"{gr_key}", "isbns": f"{book[4]}"})
         gr_json = gr_data.json()
         avg_rank = gr_json['books'][0]['average_rating']
@@ -123,4 +123,25 @@ def add_comment(book_id):
     Review.add_coment(book_id, user_id, published, text)
     return redirect(f"/book/{book_id}")
 
-@app.route("/api/")
+@app.route("/api/<string:isbn>")
+def api_search_by_isbn(isbn):
+    try:
+        gr_data = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": f"{gr_key}", "isbns": f"{isbn}"})
+        gr_json = gr_data.json()
+        average_score = gr_json['books'][0]['average_rating']
+        review_count = gr_json['books'][0]['work_ratings_count']
+    except:
+        average_score = 'no data'
+        review_count = 'no data'
+
+    book = Book.search_by_isbn(isbn)
+    
+    book_isbn = {
+        "title": book[1],
+        "author": book[2],
+        "year": book[3],
+        "isbn": book[4],
+        "review_count": review_count,
+        "average_score": average_score
+    }
+    return json.dumps(book_isbn)

@@ -11,7 +11,7 @@ class User():
         self.reviews_id = []
 
     @classmethod
-    def add_user(self, username, password, email):
+    def add_user(cls, username, password, email):
         query = f"INSERT INTO users (username, password, email) VALUES ('{username}', '{password}', '{email}')"
         print(query)
         cursor = conn.cursor()
@@ -23,22 +23,6 @@ class User():
     def __repr__(self):
         return f"<username: {self.username}, password: {self.password}, email: {self.email}>"
 
-    def is_active(self):
-        """True, as all users are active."""
-        return True
-
-    def get_id(self):
-        """Return the email address to satisfy Flask-Login's requirements."""
-        return self.email
-
-    def is_authenticated(self):
-        """Return True if the user is authenticated."""
-        return self.authenticated
-
-    def is_anonymous(self):
-        """False, as anonymous users aren't supported."""
-        return False
-
 
 class Book:
     def __init__(self, title, author, year, isbn, review_count=0, avarage_score=0.0):
@@ -49,13 +33,14 @@ class Book:
         self.review_count = review_count
         self.avarage_score = avarage_score
 
-    # @classmethod
-    # def search_by_isbn(self, isbn):
-    #     query = f"SELECT * FROM book WHERE isbn ILIKE '%{isbn}%'"
-    #     cursor = conn.cursor()
-    #     cursor.execute(query)
-    #     book = cursor.fetchall()
-    #     cursor.close()
+    @classmethod
+    def search_by_isbn(cls, isbn):
+        query = f"SELECT * FROM book WHERE isbn ILIKE '%{isbn}%'"
+        cursor = conn.cursor()
+        cursor.execute(query)
+        book = cursor.fetchone()
+        cursor.close()
+        return book
 
     @classmethod
     def search(cls, text):
@@ -67,7 +52,6 @@ class Book:
         cursor = conn.cursor()
         cursor.execute(query)
         result = cursor.fetchall()
-        print(query)
         cursor.close()        
 
         return result
@@ -79,7 +63,6 @@ class Book:
         cursor.execute(query)
         book = cursor.fetchone()
         cursor.close()
-
         return book
     
     @classmethod

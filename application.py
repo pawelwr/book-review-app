@@ -68,14 +68,14 @@ def book_page(id):
     try:
         gr_data = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": f"{gr_key}", "isbns": f"{book[4]}"})
         gr_json = gr_data.json()
-        avg_rank = gr_json['books'][0]['average_rating']
-        num_ratings = gr_json['books'][0]['work_ratings_count']
+        average_score = gr_json['books'][0]['average_rating']
+        review_count = gr_json['books'][0]['work_ratings_count']
     except:
-        avg_rank = 'no data'
-        num_ratings = 'no data'
+        average_score = 'no data'
+        review_count = 'no data'
     
     comments = Book.get_comments(id)
-    return render_template("book_page.html", avg_rank=avg_rank, num_ratings=num_ratings, book=book, comments=comments)
+    return render_template("book_page.html", average_score=average_score, review_count=review_count, book=book, comments=comments)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():

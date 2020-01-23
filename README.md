@@ -9,13 +9,8 @@ https://docs.cs50.net/web/2020/x/projects/1/project1.html
 * App use external Postgres database, you have to set environment variables for database to run app.
 * For security reason database credentials are not added to repository.
 
-TODO:
-* Confirm password at register
-* User messages
-* User can add only one review per book
-
 TO RUN:
 * Set up Postgres database
 * pip install -r requirements.txt
-* export FLASK_APP=application
+* export FLASK_APP=application.py
 * flask run

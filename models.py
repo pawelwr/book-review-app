@@ -30,7 +30,6 @@ class User():
         """False, as anonymous users aren't supported."""
         return False
 
-
     @classmethod
     def add_user(cls, username, password, email):
         query = f"INSERT INTO users (username, password, email) VALUES ('{username}', '{password}', '{email}')"
@@ -39,10 +38,6 @@ class User():
         conn.commit()
         cursor.close()
         return True
-
-    def __repr__(self):
-        return f"<username: {self.username}, password: {self.password}, email: {self.email}>"
-
 
 class Book:
     def __init__(self, title, author, year, isbn, review_count=0, avarage_score=0.0):
@@ -104,8 +99,16 @@ class Review:
 
     @classmethod
     def add_coment(cls, book_id, user_id, published, content):
-        query=f"INSERT INTO review (book_id, user_id, published, content) VALUES ({book_id}, {user_id}, '{published}', '{content}')"
         cursor = conn.cursor()
+        # check if user allready add comment for this book
+        query = f"SELECT * FROM review WHERE user_id = '{user_id}' AND book_id = '{book_id}'"
+        cursor.execute(query)
+        comment = cursor.fetchone()
+        if comment:
+            cursor.close()
+            return False
+        query=f"INSERT INTO review (book_id, user_id, published, content) VALUES ({book_id}, {user_id}, '{published}', '{content}')"
         cursor.execute(query)
         conn.commit()
         cursor.close()
+        return True

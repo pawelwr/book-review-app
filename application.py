@@ -118,6 +118,7 @@ def add_comment(book_id):
     Review.add_coment(book_id, user_id, published, text)
     return redirect(f"/book/{book_id}")
 
+
 @app.route("/api/<string:isbn>")
 def api_search_by_isbn(isbn):
     try:

@@ -21,9 +21,10 @@
 <div>
 {% if current_user.is_authenticated %}
     <form action="/comment/{{ book[3] }}" method="post">
-        <input type="text" name="add_comment" size="300" placeholder="Add comment...">
+        <input type="text" name="add_comment" size="500" placeholder="Add comment...">
         <input type="submit" value="submit">
     </form>
+    <p>Remember that you can add only one comment per book</p>
 {% else %}
     <p>You have to login to add comment</p>
 {% endif %}

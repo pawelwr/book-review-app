@@ -41,15 +41,12 @@ def index():
 @app.route("/", methods=["POST"])
 def search():
     text = request.form.get("search")
-    print(text)
     result = Book.search(text)
-    print(result)
     return render_template("search_result.html", text=text, result=result)
 
 @login_manager.user_loader
 def load_user(username):
     query = f"SELECT username, password, email, id FROM users WHERE username = '{username}' OR email = '{username}'"
-    print("load_user query", query)
     cursor = conn.cursor()
     cursor.execute(query)
     user = cursor.fetchone()
@@ -90,7 +87,6 @@ def login():
 
         if user is None or not current_user.is_authenticated:
             flash('Invalid username or password')
-            print("nouser")
             return redirect("/login")
 
         return render_template("layout.html")
@@ -117,7 +113,6 @@ def register():
 @app.route("/comment/<int:book_id>", methods=['POST'])
 def add_comment(book_id):
     text = request.form.get("add_comment")
-    print(text)
     published = datetime.now()
     user_id = current_user.id
     Review.add_coment(book_id, user_id, published, text)
